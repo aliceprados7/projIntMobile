@@ -1,12 +1,47 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import Login from './screens/PLogin';
+import PInicial from './screens/PInicial'
+import PUser from './screens/PUser';
+import PCertificados from './screens/PCertificados';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+  return(
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+
+        <Stack.Screen 
+          name="Login" 
+          component={Login} 
+          options={{ headerShown: false }}
+        />
+
+         <Stack.Screen 
+          name="PInicial" 
+          component={PInicial} 
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen 
+          name="PUser" 
+          component={PUser} 
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen 
+          name="PCertificados" 
+          component={PCertificados} 
+          options={{ headerShown: false }}
+        /> 
+
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
