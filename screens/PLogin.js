@@ -22,7 +22,7 @@ export default function Login({ navigation}) {
         <Text style={styles.label}>Digite seu número de registro:</Text>
         <TextInput
         style={styles.input}
-        placeholder="E-mail"
+        placeholder="Número de registro"
         autoCapitalize="none"
         value={email}
         onChangeText={setEmail}

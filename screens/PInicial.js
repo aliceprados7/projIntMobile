@@ -53,6 +53,7 @@ export default function PInicial({ navigation }) {
 
         {/*Barra de pesquisa*/}
         <Searchbar
+            style={styles.Searchbar}
             placeholder="Buscar cursos..."
             onChangeText={(value) => buscarCursos(value)}
             value={search}
@@ -112,5 +113,9 @@ txtIntro:{
     fontSize: 20,
     alignItems: 'center',
     paddingHorizontal: 20,
+},
+Searchbar:{
+    marginHorizontal: 20,
+    marginTop: 20,
 }
 });
