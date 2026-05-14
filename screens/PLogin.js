@@ -8,7 +8,17 @@ export default function Login({ navigation}) {
 
     const entrar = () => {
     //A fazer
-    navigation.navigate('PInicial');
+    //  try {
+    //         const response = await fetch(`http://10.110.12.63:5000/login/${email}/${senha}`);
+    //         const data = await response.json();
+            
+    //       if(data.status_code == 201){
+             navigation.navigate('PInicial');
+    //       }
+    //       } catch (error) {
+    //         console.log(error);
+    //       }
+    
   };
   return (
     <SafeAreaProvider>

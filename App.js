@@ -8,6 +8,7 @@ import Login from './screens/PLogin';
 import PInicial from './screens/PInicial'
 import PUser from './screens/PUser';
 import PCertificados from './screens/PCertificados';
+import VisualizarCertificado from './screens/VisualizarCertificado';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,12 @@ export default function App() {
           component={PCertificados} 
           options={{ headerShown: false }}
         /> 
+
+        <Stack.Screen
+          name="VisualizarCertificado"
+          component={VisualizarCertificado}
+          options={{ title: 'Certificado' }}
+        />
 
       </Stack.Navigator>
     </NavigationContainer>
