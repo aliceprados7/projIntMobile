@@ -14,6 +14,7 @@ import Slider from '@react-native-community/slider';
 
 export default function PUser({ navigation }) {
 
+  const [registro, setRegistro] = useState('');
   const [novoCurso, setNovoCurso] = useState('');
   const [mostrarInput, setMostrarInput] = useState(false);
 
@@ -23,8 +24,10 @@ export default function PUser({ navigation }) {
   const adicionarCurso = () => {
 
     if (novoCurso.trim() === '') {
+
       Alert.alert('Digite um nome para o curso');
       return;
+
     }
 
     const novo = {
@@ -40,36 +43,69 @@ export default function PUser({ navigation }) {
   };
 
   //Atualizar progresso
-const atualizarProgresso = async (curso) => {
+  const atualizarProgresso = async (curso) => {
 
-  const jsonEnvio = {
-    idCurso: curso.id,
-    nomeCurso: curso.nome,
-    porcentagem: curso.progresso,
+    if (!registro) {
+
+      Alert.alert(
+        'Digite o número de registro'
+      );
+
+      return;
+    }
+
+    const jsonEnvio = {
+      numero_registro: registro,
+      idCurso: curso.id,
+      nomeCurso: curso.nome,
+      porcentagem: curso.progresso,
+    };
+
+    console.log(jsonEnvio);
+
+    try {
+
+      const response = await fetch(
+        'http://10.110.12.62:5000/progresso',
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type': 'application/json',
+          },
+
+          body: JSON.stringify(jsonEnvio),
+        }
+      );
+
+      const data = await response.json();
+
+      console.log(data);
+
+      if (response.ok) {
+
+        Alert.alert(
+          'Progresso atualizado com sucesso'
+        );
+
+      } else {
+
+        Alert.alert(
+          'Erro ao atualizar progresso'
+        );
+
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
+      Alert.alert(
+        'Erro ao conectar com servidor'
+      );
+
+    }
   };
-
-  console.log(jsonEnvio);
-
-  /*
-  BACKEND
-
-  try {
-
-    await fetch('http://SEU_BACKEND/progresso', {
-      method: 'POST',
-
-      headers: {
-        'Content-Type': 'application/json',
-      },
-
-      body: JSON.stringify(jsonEnvio),
-    });
-
-  } catch (error) {
-    console.log(error);
-  }
-  */
-};
 
   return (
     <SafeAreaView style={styles.container}>
@@ -81,33 +117,48 @@ const atualizarProgresso = async (curso) => {
           style={styles.bntNavigation}
           onPress={() => navigation.navigate('PUser')}
         >
-          <Text style={styles.txtBotao}>Meu Perfil</Text>
+          <Text style={styles.txtBotao}>
+            Meu Perfil
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.bntNavigation}
           onPress={() => navigation.navigate('PInicial')}
         >
-          <Text style={styles.txtBotao}>Home</Text>
+          <Text style={styles.txtBotao}>
+            Home
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.bntNavigation}
           onPress={() => navigation.navigate('PCertificados')}
         >
-          <Text style={styles.txtBotao}>Certificados</Text>
+          <Text style={styles.txtBotao}>
+            Certificados
+          </Text>
         </TouchableOpacity>
 
       </View>
 
       {/* DADOS FUNCIONÁRIO */}
       <Text style={styles.nomeFunc}>
-        Funcionário: Teste
+        Funcionário
       </Text>
 
       <Text style={styles.nRegistro}>
-        Número de Registro: XXXXXXXX
+        Número de Registro
       </Text>
+
+      {/* INPUT REGISTRO */}
+      <TextInput
+        style={styles.input}
+        placeholder="Digite o número de registro"
+        placeholderTextColor="#999"
+        value={registro}
+        onChangeText={setRegistro}
+      />
 
       {/* CURSOS */}
       <View style={styles.areaCursos}>
@@ -168,7 +219,7 @@ const atualizarProgresso = async (curso) => {
               </Text>
 
               {/* SLIDER */}
-                <Slider
+              <Slider
                 style={{ width: '100%', height: 40 }}
                 minimumValue={0}
                 maximumValue={100}
@@ -180,16 +231,16 @@ const atualizarProgresso = async (curso) => {
 
                 onValueChange={(valor) => {
 
-                    setCursos((cursosAtuais) =>
+                  setCursos((cursosAtuais) =>
                     cursosAtuais.map((curso) =>
-                        curso.id === item.id
+                      curso.id === item.id
                         ? { ...curso, progresso: valor }
                         : curso
                     )
-                    );
+                  );
 
                 }}
-                />
+              />
 
               {/* BOTÃO OK */}
               <TouchableOpacity
@@ -250,6 +301,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingHorizontal: 20,
     marginTop: 10,
+    marginBottom: 10,
   },
 
   areaCursos: {
@@ -286,6 +338,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 15,
     height: 50,
+    marginHorizontal: 20,
   },
 
   botaoOk: {
