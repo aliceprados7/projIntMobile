@@ -1,50 +1,56 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert, Image, ScrollView, FlatList, SectionList } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+} from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Searchbar } from 'react-native-paper';
 
 export default function AddFuncionario({ navigation }) {
-    const [nome, setNome] = useState('');
-    const [registro, setRegistro] = useState('');
-    const [cargo, setCargo] = useState('');
-    const [departamento, setDepartamento] = useState('');
-    const [senha, setSenha] = useState('');
 
-    const salvarFuncionario = async () => {
+  const [nome, setNome] = useState('');
+  const [registro, setRegistro] = useState('');
+  const [cargo, setCargo] = useState('');
+  const [departamento, setDepartamento] = useState('');
+  const [senha, setSenha] = useState('');
 
-      if (
-        !nome ||
-        !registro ||
-        !cargo ||
-        !departamento ||
-        !senha
-      ) {
+  const salvarFuncionario = async () => {
 
-        Alert.alert(
-          'Preencha todos os campos'
-        );
+    if (
+      !nome ||
+      !registro ||
+      !cargo ||
+      !departamento ||
+      !senha
+    ) {
 
-        return;
-      }
+      Alert.alert(
+        'Preencha todos os campos'
+      );
 
-      // JSON enviado para backend
-      const jsonEnvio = {
-        nomeCompleto: nome,
-        numeroRegistro: registro,
-        cargo: cargo,
-        departamento: departamento,
-        senha: senha,
-      };
+      return;
+    }
+    //salva no json
+    const jsonEnvio = {
+      username: nome,
+      password: senha,
+      name: nome,
+      numero_registro: registro,
+      cargo: cargo,
+      departamento: departamento,
+    };
 
-      console.log(jsonEnvio);
+    console.log(jsonEnvio);
 
-      /*
-      BACKEND / DOCKER
+    try {
 
-      try {
-
-        await fetch('http://SEU_IP:3000/funcionarios', {
-
+      const response = await fetch(
+        'http://10.110.12.62:5000/cadastro',
+        {
           method: 'POST',
 
           headers: {
@@ -52,53 +58,79 @@ export default function AddFuncionario({ navigation }) {
           },
 
           body: JSON.stringify(jsonEnvio),
-        });
-
-      } catch (error) {
-
-        console.log(error);
-
-      }
-      */
-
-      Alert.alert(
-        'Funcionário cadastrado'
+        }
       );
 
-      // Limpar campos
-      setNome('');
-      setRegistro('');
-      setCargo('');
-      setDepartamento('');
-      setSenha('');
-    };
+      const data = await response.json();
+
+      console.log(data);
+
+      if (response.ok) {
+
+        Alert.alert(
+          'Funcionário cadastrado com sucesso'
+        );
+
+        setNome('');
+        setRegistro('');
+        setCargo('');
+        setDepartamento('');
+        setSenha('');
+
+      } else {
+
+        Alert.alert(
+          'Erro ao cadastrar'
+        );
+
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
+      Alert.alert(
+        'Erro ao conectar com servidor'
+      );
+
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
+
       <View style={styles.header}>
 
-        {/*Botão para entrar no perfil de cada um*/}
+        {/* Botão visualizar funcionários */}
         <TouchableOpacity
-        style={styles.bntNavigation}
-        onPress={()=> navigation.navigate('VisuFuncionario')}
+          style={styles.bntNavigation}
+          onPress={() => navigation.navigate('VisuFuncionario')}
         >
-            <Text style={styles.txtBotao}>Funcionários</Text>
+          <Text style={styles.txtBotao}>
+            Funcionários
+          </Text>
         </TouchableOpacity>
 
-        {/*Botão Home */}
+        {/* Botão adicionar */}
         <TouchableOpacity
-        style={styles.bntNavigation}
-        onPress={()=> navigation.navigate('AddFuncionario')}
+          style={styles.bntNavigation}
+          onPress={() => navigation.navigate('AddFuncionario')}
         >
-            <Text style={styles.txtBotao}>Adicionar funcionários</Text>
+          <Text style={styles.txtBotao}>
+            Adicionar funcionários
+          </Text>
         </TouchableOpacity>
+
       </View>
 
-      <Text style={styles.txtAddFunc}>Adicionar funcionários</Text>
+      <Text style={styles.txtAddFunc}>
+        Adicionar funcionários
+      </Text>
+
       {/* FORMULÁRIO */}
       <View style={styles.areaFormulario}>
 
-        {/* Nome completo */}
+        {/* Nome */}
         <Text style={styles.label}>
           Nome completo
         </Text>
@@ -111,7 +143,7 @@ export default function AddFuncionario({ navigation }) {
           onChangeText={setNome}
         />
 
-        {/* Número de registro */}
+        {/* Registro */}
         <Text style={styles.label}>
           Número de registro
         </Text>
@@ -176,88 +208,77 @@ export default function AddFuncionario({ navigation }) {
 
       </View>
 
-
-
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
-    backgroundColor: '#282d33', // Seu fundo padrão
+    backgroundColor: '#282d33',
   },
+
   header: {
     height: 80,
     backgroundColor: '#83a4f3',
-    flexDirection: 'row',         
+    flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
   },
-  headerTitle: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center', // Centraliza o conteúdo no meio da tela
-    alignItems: 'center',
-  },
-  texto: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  bntNavigation:{
+
+  bntNavigation: {
     paddingVertical: 8,
     paddingHorizontal: 10,
   },
+
   txtBotao: {
-  color: '#fff',
-  fontSize: 16,
-  fontWeight: 'bold',
-},
-txtAddFunc:{
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
+  txtAddFunc: {
     fontWeight: 'bold',
     color: '#83a4f3',
     fontSize: 30,
     marginTop: 40,
     paddingHorizontal: 20,
-},
+  },
 
-areaFormulario:{
-  marginTop: 30,
-  paddingHorizontal: 20,
-},
+  areaFormulario: {
+    marginTop: 30,
+    paddingHorizontal: 20,
+  },
 
-label:{
-  color: '#83a4f3',
-  fontSize: 16,
-  fontWeight: 'bold',
-  marginBottom: 8,
-  marginTop: 15,
-},
+  label: {
+    color: '#83a4f3',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    marginTop: 15,
+  },
 
-input:{
-  backgroundColor: '#fff',
-  borderRadius: 10,
-  paddingHorizontal: 15,
-  height: 50,
-},
+  input: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    height: 50,
+  },
 
-botaoSalvar:{
-  backgroundColor: '#83a4f3',
-  marginTop: 30,
-  padding: 15,
-  borderRadius: 10,
-  alignItems: 'center',
-  marginBottom: 30,
-},
+  botaoSalvar: {
+    backgroundColor: '#83a4f3',
+    marginTop: 30,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 30,
+  },
 
-txtSalvar:{
-  color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 16,
-},
+  txtSalvar: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 
 });

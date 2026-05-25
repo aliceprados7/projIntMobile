@@ -1,23 +1,54 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert, Image } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({ navigation}) {
-    const [senha, setSenha] = useState('');
-    const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [registro, setRegistro] = useState('');
+  const [user, setUser] = useState([]); 
 
-    const entrar = () => {
-    //A fazer
-    //  try {
-    //         const response = await fetch(`http://10.110.12.63:5000/login/${email}/${senha}`);
-    //         const data = await response.json();
-            
-    //       if(data.status_code == 201){
-             navigation.navigate('PInicial');
-    //       }
-    //       } catch (error) {
-    //         console.log(error);
-    //       }
+  const handleLogin = async () => {
+
+    try {
+
+      const response = await fetch(
+        `http://SEU_IP:5000/login/${registro}/${senha}`
+      );
+
+      const data = await response.json();
+
+      if (data.status === 201) {
+
+        console.log(data.user);
+
+        const usuarioArray = [data.user];
+
+        setUser(usuarioArray);
+
+        // SALVAR NO STORAGE
+        await AsyncStorage.setItem(
+          'funcionario',
+          JSON.stringify(usuarioArray)
+        );
+
+        // NAVEGAÇÃO
+        navigation.navigate('PInicial', {
+          user: usuarioArray,
+        });
+
+      } else {
+
+        Alert.alert('Login inválido');
+
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
+      Alert.alert('Erro ao conectar com o servidor');
+    }
     
   };
   return (
