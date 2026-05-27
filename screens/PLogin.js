@@ -13,7 +13,7 @@ export default function Login({ navigation}) {
     try {
 
       const response = await fetch(
-        `http://SEU_IP:5000/login/${registro}/${senha}`
+        `http://localhost:5000/login/${registro}/${senha}`
       );
 
       const data = await response.json();
@@ -65,9 +65,9 @@ export default function Login({ navigation}) {
         style={styles.input}
         placeholder="Número de registro"
         autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
+        value={registro}
+        onChangeText={setRegistro}
+        keyboardType="numeric"
         />
         {/* txtinput para a senha do funcionário */}
         <Text style={styles.label}>Digite sua senha:</Text>
@@ -80,7 +80,7 @@ export default function Login({ navigation}) {
         />
         <TouchableOpacity
           style={styles.botao}
-          onPress={entrar}
+          onPress={handleLogin}
           activeOpacity={0.7}
         ><Text style={styles.txtBotao}>Entrar</Text></TouchableOpacity>
     </SafeAreaView>
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     padding: 15, 
     borderRadius: 10
   },
-  txtBnt: {
+  txtBotao: {
     color: '#FFF', 
     textAlign: 'center'
   },
