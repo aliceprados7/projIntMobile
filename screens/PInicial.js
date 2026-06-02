@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert, Image, ScrollView, FlatList, SectionList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Searchbar } from 'react-native-paper';
@@ -6,17 +6,37 @@ import { Searchbar } from 'react-native-paper';
 export default function PInicial({ navigation }) {
     const [search, setSearch] = useState('');
     const [cursos, setCursos] = useState([]);
+    useEffect(() => {
+      buscarCursos('');
+    }, []);
 
     const buscarCursos = async (texto) => {
         setSearch(texto);
 
         try {
-            const response = await fetch(`https://sua-api.com/cursos?nome=${texto}`);
-            const data = await response.json();
-            setCursos(data);
-            } catch (error) {
-            console.log(error);
+            // Se a busca estiver vazia, carrega todos os cursos
+            if (!texto.trim()) {
+                const response = await fetch('http://10.110.12.42:5000/cursos_home');
+                const data = await response.json();
+                setCursos(data);
+                return;
             }
+
+            const response = await fetch(
+                `http://10.110.12.42:5000/buscar_cursos_palavras/${texto}`
+            );
+
+            const data = await response.json();
+
+            if (!data.resultado) {
+                setCursos(data);
+            } else {
+                setCursos([]);
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
     };
 
   return (
@@ -58,6 +78,43 @@ export default function PInicial({ navigation }) {
             onChangeText={(value) => buscarCursos(value)}
             value={search}
         />
+
+        <ScrollView style={{ marginTop: 20 }}>
+        {cursos.map((curso, index) => (
+          <View
+            key={curso.id || index}
+            style={{
+              backgroundColor: '#3a4149',
+              marginHorizontal: 20,
+              marginBottom: 10,
+              padding: 15,
+              borderRadius: 10,
+            }}
+          >
+            <Text
+              style={{
+                color: '#83a4f3',
+                fontSize: 18,
+                fontWeight: 'bold',
+              }}
+            >
+              {curso.titulo}
+            </Text>
+
+            <Text style={{ color: '#fff', marginTop: 5 }}>
+              {curso.resumo}
+            </Text>
+
+            <Text style={{ color: '#ccc', marginTop: 5 }}>
+              Duração: {curso.duracao}
+            </Text>
+
+            <Text style={{ color: '#ccc' }}>
+              Nível: {curso.nivel}
+            </Text>
+          </View>
+        ))}
+      </ScrollView>
 
 
     </SafeAreaView>
