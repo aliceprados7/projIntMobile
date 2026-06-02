@@ -52,7 +52,7 @@ export default function PCertificados({navigation}) {
     );
 
     const response = await fetch(
-      'http://10.110.12.62:5000/api/certificados/upload',
+      'http://10.110.12.42:5000/api/certificados/upload',
       {
         method: 'POST',
         body: formData,
@@ -89,7 +89,6 @@ export default function PCertificados({navigation}) {
     );
 
   }
-};
 
     const novoCertificado = {
       id: Date.now(),
@@ -135,6 +134,7 @@ export default function PCertificados({navigation}) {
     // limpa campos
     setTitulo('');
     setImagem(null);
+
   };
   const listarCertificados = async () => {
 
@@ -145,7 +145,7 @@ export default function PCertificados({navigation}) {
   try {
 
     const response = await fetch(
-      `http://10.110.12.62:5000/api/certificados?usuario_id=${registro}`
+      `http://10.110.12.42:5000/api/certificados?usuario_id=${registro}`
     );
 
     const dados = await response.json();
@@ -309,6 +309,7 @@ export default function PCertificados({navigation}) {
 />
     </SafeAreaView>
   );
+}
 
 const styles = StyleSheet.create({
   container: {
