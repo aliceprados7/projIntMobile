@@ -17,14 +17,14 @@ export default function PInicial({ navigation }) {
         try {
             // Se a busca estiver vazia, carrega todos os cursos
             if (!texto.trim()) {
-                const response = await fetch('http://10.110.12.42:5000/cursos_home');
+                const response = await fetch('http://10.110.12.90:5000/cursos_home');
                 const data = await response.json();
                 setCursos(data);
                 return;
             }
 
             const response = await fetch(
-                `http://10.110.12.42:5000/buscar_cursos_palavras/${texto}`
+                `http://10.110.12.90:5000/buscar_cursos_palavras/${texto}`
             );
 
             const data = await response.json();

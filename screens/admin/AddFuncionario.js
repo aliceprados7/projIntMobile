@@ -36,7 +36,7 @@ export default function AddFuncionario({ navigation }) {
     }
     //salva no json
     const jsonEnvio = {
-      username: nome,
+      username: registro,
       password: senha,
       name: nome,
       numero_registro: registro,
@@ -49,7 +49,7 @@ export default function AddFuncionario({ navigation }) {
     try {
 
       const response = await fetch(
-        'http://10.110.12.42:5000/cadastro',
+        'http://10.110.12.90:5000/cadastro',
         {
           method: 'POST',
 
