@@ -11,13 +11,15 @@ import PCertificados from './screens/PCertificados';
 import VisualizarCertificado from './screens/VisualizarCertificado';
 import AddFuncionario from './screens/admin/AddFuncionario';
 import VisuFuncionario from './screens/admin/VisuFuncionario';
+import { AuthProvider, useAuth } from './screens/context/AuthContext';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return(
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+    <AuthProvider>
+      <NavigationContainer>
+      <Stack.Navigator initialRouteName="AddFuncionario">
 
         <Stack.Screen 
           name="Login" 
@@ -63,6 +65,7 @@ export default function App() {
 
       </Stack.Navigator>
     </NavigationContainer>
+    </AuthProvider>
   );
 }
 

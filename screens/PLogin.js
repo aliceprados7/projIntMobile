@@ -2,8 +2,11 @@ import React, { useState } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert, Image } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from './context/AuthContext';
 
 export default function Login({ navigation}) {
+
+  const { loginGlobal } = useAuth();
   const [senha, setSenha] = useState('');
   const [registro, setRegistro] = useState('');
   const [user, setUser] = useState([]); 
@@ -22,15 +25,12 @@ export default function Login({ navigation}) {
 
         console.log(data.user);
 
-        const usuarioArray = [data.user];
+        const usuarioArray = data.user[0];
 
         setUser(usuarioArray);
 
         // SALVAR NO STORAGE
-        await AsyncStorage.setItem(
-          'funcionario',
-          JSON.stringify(usuarioArray)
-        );
+        loginGlobal(usuarioArray)
 
         // NAVEGAÇÃO
         navigation.navigate('PInicial', {

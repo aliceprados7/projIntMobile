@@ -13,13 +13,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
-import { useAuth } from '../src/AuthContext';
+import { useAuth } from './context/AuthContext';
 
 
 export default function PCertificados({navigation}) {
 
   const { usuario } = useAuth();
-  const registro = usuario?.numero_registro;
+  const registro = usuario.numero_registro;
+  console.log(registro)
   const [imagem, setImagem] = useState(null);
   const [titulo, setTitulo] = useState('');
   const [certificados, setCertificados] = useState([]);
