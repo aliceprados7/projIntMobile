@@ -13,24 +13,84 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
+import { useAuth } from '../src/AuthContext';
 
 
 export default function PCertificados({navigation}) {
 
+  const { usuario } = useAuth();
+  const registro = usuario?.numero_registro;
   const [imagem, setImagem] = useState(null);
   const [titulo, setTitulo] = useState('');
   const [certificados, setCertificados] = useState([]);
 
   const salvarCertificado = async () => {
 
-    if (!titulo || !imagem) {
+  if (!titulo || !imagem) {
+
+    Alert.alert(
+      'Preencha registro, título e selecione uma imagem'
+    );
+
+    return;
+  }
+
+  try {
+
+    const formData = new FormData();
+
+    formData.append(
+      'usuario_id',
+      registro
+    );
+
+    formData.append(
+      'arquivo',
+      {
+        uri: imagem,
+        name: 'certificado.jpg',
+        type: 'image/jpeg',
+      }
+    );
+
+    const response = await fetch(
+      'http://10.110.12.42:5000/api/certificados/upload',
+      {
+        method: 'POST',
+        body: formData,
+      }
+    );
+
+    const dados = await response.json();
+
+    if (response.ok) {
 
       Alert.alert(
-        'Preencha o título e selecione uma imagem'
+        dados.mensagem
       );
 
-      return;
+      await listarCertificados();
+
+      setTitulo('');
+      setImagem(null);
+
+    } else {
+
+      Alert.alert(
+        dados.erro
+      );
+
     }
+
+  } catch (error) {
+
+    console.log(error);
+
+    Alert.alert(
+      'Erro ao conectar com servidor'
+    );
+
+  }
 
     const novoCertificado = {
       id: Date.now(),
@@ -76,7 +136,38 @@ export default function PCertificados({navigation}) {
     // limpa campos
     setTitulo('');
     setImagem(null);
+
   };
+  const listarCertificados = async () => {
+
+  if (!registro) {
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      `http://10.110.12.42:5000/api/certificados?usuario_id=${registro}`
+    );
+
+    const dados = await response.json();
+
+    if (response.ok) {
+
+      setCertificados(dados);
+
+    } else {
+
+      Alert.alert(dados.erro);
+
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+};
 
   const escolherImagem = async () => {
 
@@ -175,7 +266,7 @@ export default function PCertificados({navigation}) {
         <View style={styles.cardCertificado}>
 
           <Text style={styles.tituloCertificado}>
-            {item.titulo}
+            {item.nome_original}
           </Text>
 
           <TouchableOpacity
@@ -195,7 +286,7 @@ export default function PCertificados({navigation}) {
             <View>
 
               <Text style={styles.nomeArquivo}>
-                {item.titulo}
+                {item.nome_original}
               </Text>
 
               <Text style={styles.tipoArquivo}>
