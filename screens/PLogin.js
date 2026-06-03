@@ -16,7 +16,7 @@ export default function Login({ navigation}) {
     try {
 
       const response = await fetch(
-        `http://10.110.12.42:5000/login/${registro}/${senha}`
+        `http://10.110.12.90:5000/login/${registro}/${senha}`
       );
 
       const data = await response.json();
@@ -30,12 +30,25 @@ export default function Login({ navigation}) {
         setUser(usuarioArray);
 
         // SALVAR NO STORAGE
-        loginGlobal(usuarioArray)
+        loginGlobal(usuarioArray);
 
-        // NAVEGAÇÃO
-        navigation.navigate('PInicial', {
-          user: usuarioArray,
-        });
+        if (usuarioArray?.cargo === 'RH') {
+
+          console.log('Acesso administrativo detectado (RH).');
+
+          navigation.navigate('VisuFuncionario', {
+            user: usuarioArray,
+          });
+
+        } else {
+
+          console.log('Acesso padrão detectado.');
+
+          navigation.navigate('PInicial', {
+            user: usuarioArray,
+          });
+
+        }
 
       } else {
 
