@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
 
-export default function PUser({ navigation }) {
+export default function PUser({ navigation, route }) {
 
   const [registro, setRegistro] = useState('');
   const [novoCurso, setNovoCurso] = useState('');
@@ -106,6 +106,28 @@ export default function PUser({ navigation }) {
 
     }
   };
+    useEffect(() => {
+    if (route.params?.curso) {
+
+      const novo = {
+        id: Date.now(),
+        nome: route.params.curso,
+        progresso: 0,
+      };
+
+      setCursos((cursosAtuais) => {
+
+        const existe = cursosAtuais.some(
+          curso => curso.nome === route.params.curso
+        );
+
+        if (existe) return cursosAtuais;
+
+        return [...cursosAtuais, novo];
+      });
+
+    }
+  }, [route.params]);
 
   return (
     <SafeAreaView style={styles.container}>

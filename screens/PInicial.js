@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert, Image, ScrollView, FlatList, SectionList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Searchbar } from 'react-native-paper';
+import { Linking } from 'react-native';
 
 export default function PInicial({ navigation }) {
     const [search, setSearch] = useState('');
@@ -112,6 +113,23 @@ export default function PInicial({ navigation }) {
             <Text style={{ color: '#ccc' }}>
               Nível: {curso.nivel}
             </Text>
+            <TouchableOpacity
+              style={styles.botao}
+              onPress={() => Linking.openURL(curso.link)}
+            >
+              <Text>Ver Curso</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.botao}
+              onPress={() =>
+                navigation.navigate('PUser', {
+                  curso: curso.titulo
+                })
+              }
+            >
+              <Text>Inscrever-se</Text>
+            </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
