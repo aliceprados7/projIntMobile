@@ -30,12 +30,25 @@ export default function Login({ navigation}) {
         setUser(usuarioArray);
 
         // SALVAR NO STORAGE
-        loginGlobal(usuarioArray)
+        loginGlobal(usuarioArray);
 
-        // NAVEGAÇÃO
-        navigation.navigate('PInicial', {
-          user: usuarioArray,
-        });
+        if (usuarioArray?.cargo === 'RH') {
+
+          console.log('Acesso administrativo detectado (RH).');
+
+          navigation.navigate('VisuFuncionario', {
+            user: usuarioArray,
+          });
+
+        } else {
+
+          console.log('Acesso padrão detectado.');
+
+          navigation.navigate('PInicial', {
+            user: usuarioArray,
+          });
+
+        }
 
       } else {
 
