@@ -55,7 +55,7 @@ export default function PCertificados({navigation}) {
     );
 
     const response = await fetch(
-      'http://10.110.12.42:5000/api/certificados/upload',
+      'http://10.110.12.90:5000/api/certificados/upload',
       {
         method: 'POST',
         body: formData,
@@ -148,7 +148,7 @@ export default function PCertificados({navigation}) {
   try {
 
     const response = await fetch(
-      `http://10.110.12.42:5000/api/certificados?usuario_id=${registro}`
+      `http://10.110.12.90:5000/api/certificados?usuario_id=${registro}`
     );
 
     const dados = await response.json();

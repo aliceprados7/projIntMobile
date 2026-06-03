@@ -66,7 +66,7 @@ export default function PUser({ navigation, route }) {
     try {
 
       const response = await fetch(
-        'http://10.110.12.42:5000/progresso',
+        'http://10.110.12.90:5000/progresso',
         {
           method: 'POST',
 

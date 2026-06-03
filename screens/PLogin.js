@@ -16,7 +16,7 @@ export default function Login({ navigation}) {
     try {
 
       const response = await fetch(
-        `http://10.110.12.42:5000/login/${registro}/${senha}`
+        `http://10.110.12.90:5000/login/${registro}/${senha}`
       );
 
       const data = await response.json();
