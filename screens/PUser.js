@@ -4,7 +4,6 @@ import {
   Text,
   View,
   TouchableOpacity,
-  TextInput,
   FlatList,
   Alert,
 } from 'react-native';
@@ -12,12 +11,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from './context/AuthContext';
 
-export default function PUser({ navigation, route }) {
+export default function PUser({ navigation }) {
 
   const { usuario } = useAuth();
+
   const [cursosEmAndamento, setCursosEmAndamento] = useState([]);
   const [cursosFinalizados, setCursosFinalizados] = useState([]);
-
 
   useEffect(() => {
     cursos_em_andamento();
@@ -37,14 +36,13 @@ export default function PUser({ navigation, route }) {
 
         const data = await response.json();
 
-        const iniciados =
-          data.filter(curso => curso.status === 'INICIADO');
+        setCursosEmAndamento(
+          data.filter(curso => curso.status === 'INICIADO')
+        );
 
-        const finalizados =
-          data.filter(curso => curso.status === 'FINALIZADO');
-
-        setCursosEmAndamento(iniciados);
-        setCursosFinalizados(finalizados);
+        setCursosFinalizados(
+          data.filter(curso => curso.status === 'FINALIZADO')
+        );
 
       }
 
@@ -79,9 +77,10 @@ export default function PUser({ navigation, route }) {
           'Sucesso',
           dados.mensagem
         );
-          navigation.navigate('PCertificados')
 
-        cursos_em_andamento();
+        await cursos_em_andamento();
+
+        navigation.navigate('PCertificados');
 
       } else {
 
@@ -100,12 +99,15 @@ export default function PUser({ navigation, route }) {
 
   }
 
-
+  const todosCursos = [
+    ...cursosEmAndamento,
+    ...cursosFinalizados
+  ];
 
   return (
+
     <SafeAreaView style={styles.container}>
 
-      {/* HEADER */}
       <View style={styles.header}>
 
         <TouchableOpacity
@@ -137,24 +139,21 @@ export default function PUser({ navigation, route }) {
 
       </View>
 
-      {/* DADOS FUNCIONÁRIO */}
       <Text style={styles.nomeFunc}>
         {usuario?.name}
       </Text>
 
-
-      {/* CURSOS */}
       <View style={styles.areaCursos}>
 
         <Text style={styles.tituloCursos}>
-          Cursos em andamento
+          Meus Cursos
         </Text>
 
-
-        {/* LISTA DE CURSOS */}
         <FlatList
-          data={cursosEmAndamento}
-          keyExtractor={(item) => item.id.toString()}
+          data={todosCursos}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 80 }}
           renderItem={({ item }) => (
 
             <View style={styles.cardCurso}>
@@ -163,43 +162,44 @@ export default function PUser({ navigation, route }) {
                 {item.titulo}
               </Text>
 
-              {/* BOTÃO OK */}
-              <TouchableOpacity
-                style={styles.botaoSalvar}
-                onPress={() => handleSalvarProgresso(item.id)}
+              <Text
+                style={{
+                  color:
+                    item.status === 'FINALIZADO'
+                      ? '#4CAF50'
+                      : '#FFC107',
+                  fontWeight: 'bold',
+                  marginTop: 8,
+                  fontSize: 16,
+                }}
               >
-                <Text style={styles.txtSalvar}>
-                  Finalizar curso
-                </Text>
-              </TouchableOpacity>
-
-            </View>
-          )}
-        />
-
-        <Text style={styles.tituloCursos}>
-          Cursos finalizados
-        </Text>
-
-        <FlatList
-          data={cursosFinalizados}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-
-            <View style={styles.cardCurso}>
-
-              <Text style={styles.nomeCurso}>
-                {item.titulo}
+                {item.status}
               </Text>
 
+              {item.status === 'INICIADO' && (
+
+                <TouchableOpacity
+                  style={styles.botaoSalvar}
+                  onPress={() => handleSalvarProgresso(item.id)}
+                >
+                  <Text style={styles.txtSalvar}>
+                    Finalizar curso
+                  </Text>
+                </TouchableOpacity>
+
+              )}
+
             </View>
+
           )}
         />
 
       </View>
 
     </SafeAreaView>
+
   );
+
 }
 
 const styles = StyleSheet.create({
@@ -232,20 +232,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#83a4f3',
     fontSize: 30,
-    marginTop: 40,
+    marginTop: 30,
     paddingHorizontal: 20,
-  },
-
-  nRegistro: {
-    color: '#fff',
-    fontSize: 18,
-    paddingHorizontal: 20,
-    marginTop: 10,
-    marginBottom: 10,
   },
 
   areaCursos: {
-    marginTop: 40,
+    flex: 1,
+    marginTop: 20,
     paddingHorizontal: 20,
   },
 
@@ -253,52 +246,14 @@ const styles = StyleSheet.create({
     color: '#83a4f3',
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
-  },
-
-  botaoAdicionar: {
-    backgroundColor: '#83a4f3',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-
-  txtAdicionar: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-
-  areaNovoCurso: {
-    marginTop: 20,
-  },
-
-  input: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    height: 50,
-    marginHorizontal: 20,
-  },
-
-  botaoOk: {
-    backgroundColor: '#83a4f3',
-    marginTop: 10,
-    padding: 12,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-
-  txtOk: {
-    color: '#fff',
-    fontWeight: 'bold',
+    marginBottom: 10,
   },
 
   cardCurso: {
     backgroundColor: '#3a4047',
     borderRadius: 12,
     padding: 15,
-    marginTop: 20,
+    marginTop: 15,
   },
 
   nomeCurso: {
@@ -307,16 +262,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  progresso: {
-    color: '#83a4f3',
-    fontSize: 18,
-    marginTop: 10,
-  },
-
   botaoSalvar: {
     backgroundColor: '#83a4f3',
-    marginTop: 10,
-    padding: 10,
+    marginTop: 12,
+    padding: 12,
     borderRadius: 10,
     alignItems: 'center',
   },
@@ -324,6 +273,7 @@ const styles = StyleSheet.create({
   txtSalvar: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 16,
   },
 
 });
