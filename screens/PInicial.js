@@ -128,7 +128,7 @@ export default function PInicial({ navigation }) {
                 })
               }
             >
-              <Text>Inscrever-se</Text>
+              <Text style={styles.txtBotaoCurso}>Inscrever-se</Text>
             </TouchableOpacity>
           </View>
         ))}
@@ -192,5 +192,18 @@ txtIntro:{
 Searchbar:{
     marginHorizontal: 20,
     marginTop: 20,
-}
+},
+botao: {
+  backgroundColor: '#83a4f3',
+  marginTop: 10,
+  paddingVertical: 12,
+  borderRadius: 10,
+  alignItems: 'center',
+},
+
+txtBotaoCurso: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 16,
+},
 });

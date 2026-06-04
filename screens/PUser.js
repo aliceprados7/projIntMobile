@@ -10,89 +10,41 @@ import {
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Slider from '@react-native-community/slider';
+import { useAuth } from '../context/AuthContext';
 
 export default function PUser({ navigation, route }) {
 
-  const [registro, setRegistro] = useState('');
-  const [novoCurso, setNovoCurso] = useState('');
-  const [mostrarInput, setMostrarInput] = useState(false);
+  const { usuario } = useAuth();
+  const [cursosEmAndamento, setCursosEmAndamento] = useState([]);
+  const [cursosFinalizados, setCursosFinalizados] = useState([]);
 
-  const [cursos, setCursos] = useState([]);
 
-  //Adicionar novo curso
-  const adicionarCurso = () => {
+  useEffect(() => {
+    cursos_em_andamento();
+  }, [usuario]);
 
-    if (novoCurso.trim() === '') {
+  async function cursos_em_andamento() {
 
-      Alert.alert('Digite um nome para o curso');
-      return;
-
-    }
-
-    const novo = {
-      id: Date.now(),
-      nome: novoCurso,
-      progresso: 0,
-    };
-
-    setCursos([...cursos, novo]);
-
-    setNovoCurso('');
-    setMostrarInput(false);
-  };
-
-  //Atualizar progresso
-  const atualizarProgresso = async (curso) => {
-
-    if (!registro) {
-
-      Alert.alert(
-        'Digite o número de registro'
-      );
-
-      return;
-    }
-
-    const jsonEnvio = {
-      numero_registro: registro,
-      idCurso: curso.id,
-      nomeCurso: curso.nome,
-      porcentagem: curso.progresso,
-    };
-
-    console.log(jsonEnvio);
+    if (!usuario?.numero_registro) return;
 
     try {
 
       const response = await fetch(
-        'http://10.110.12.90:5000/progresso',
-        {
-          method: 'POST',
-
-          headers: {
-            'Content-Type': 'application/json',
-          },
-
-          body: JSON.stringify(jsonEnvio),
-        }
+        `http://10.110.12.90:5000/buscar_cursos_realizados/${usuario.numero_registro}`
       );
-
-      const data = await response.json();
-
-      console.log(data);
 
       if (response.ok) {
 
-        Alert.alert(
-          'Progresso atualizado com sucesso'
-        );
+        const data = await response.json();
 
-      } else {
+        const iniciados =
+          data.filter(curso => curso.status === 'INICIADO');
 
-        Alert.alert(
-          'Erro ao atualizar progresso'
-        );
+        const finalizados =
+          data.filter(curso => curso.status === 'FINALIZADO');
+
+        setCursosEmAndamento(iniciados);
+        setCursosFinalizados(finalizados);
 
       }
 
@@ -101,33 +53,53 @@ export default function PUser({ navigation, route }) {
       console.log(error);
 
       Alert.alert(
-        'Erro ao conectar com servidor'
+        'Erro',
+        'Erro ao buscar cursos'
       );
 
     }
-  };
-    useEffect(() => {
-    if (route.params?.curso) {
+  }
 
-      const novo = {
-        id: Date.now(),
-        nome: route.params.curso,
-        progresso: 0,
-      };
+  async function handleSalvarProgresso(id) {
 
-      setCursos((cursosAtuais) => {
+    try {
 
-        const existe = cursosAtuais.some(
-          curso => curso.nome === route.params.curso
+      const response = await fetch(
+        `http://10.110.12.90:5000/update_cursos_incritos/${usuario.numero_registro}/${id}`,
+        {
+          method: 'POST'
+        }
+      );
+
+      const dados = await response.json();
+
+      if (response.ok) {
+
+        Alert.alert(
+          'Sucesso',
+          dados.mensagem
         );
 
-        if (existe) return cursosAtuais;
+        cursos_em_andamento();
 
-        return [...cursosAtuais, novo];
-      });
+      } else {
+
+        Alert.alert(
+          'Erro',
+          dados.erro
+        );
+
+      }
+
+    } catch (error) {
+
+      console.log(error);
 
     }
-  }, [route.params]);
+
+  }
+
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -166,21 +138,9 @@ export default function PUser({ navigation, route }) {
 
       {/* DADOS FUNCIONÁRIO */}
       <Text style={styles.nomeFunc}>
-        Funcionário
+        {usuario?.name}
       </Text>
 
-      <Text style={styles.nRegistro}>
-        Número de Registro
-      </Text>
-
-      {/* INPUT REGISTRO */}
-      <TextInput
-        style={styles.input}
-        placeholder="Digite o número de registro"
-        placeholderTextColor="#999"
-        value={registro}
-        onChangeText={setRegistro}
-      />
 
       {/* CURSOS */}
       <View style={styles.areaCursos}>
@@ -189,90 +149,43 @@ export default function PUser({ navigation, route }) {
           Cursos em andamento
         </Text>
 
-        {/* BOTÃO ADICIONAR */}
-        <TouchableOpacity
-          style={styles.botaoAdicionar}
-          onPress={() => setMostrarInput(true)}
-        >
-          <Text style={styles.txtAdicionar}>
-            + Adicionar Curso
-          </Text>
-        </TouchableOpacity>
-
-        {/* INPUT NOVO CURSO */}
-        {mostrarInput && (
-
-          <View style={styles.areaNovoCurso}>
-
-            <TextInput
-              style={styles.input}
-              placeholder="Nome do curso"
-              placeholderTextColor="#999"
-              value={novoCurso}
-              onChangeText={setNovoCurso}
-            />
-
-            <TouchableOpacity
-              style={styles.botaoOk}
-              onPress={adicionarCurso}
-            >
-              <Text style={styles.txtOk}>
-                OK
-              </Text>
-            </TouchableOpacity>
-
-          </View>
-        )}
 
         {/* LISTA DE CURSOS */}
         <FlatList
-          data={cursos}
+          data={cursosEmAndamento}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
 
             <View style={styles.cardCurso}>
 
               <Text style={styles.nomeCurso}>
-                {item.nome}
+                {item.titulo}
               </Text>
-
-              <Text style={styles.progresso}>
-                {item.progresso}%
-              </Text>
-
-              {/* SLIDER */}
-              <Slider
-                style={{ width: '100%', height: 40 }}
-                minimumValue={0}
-                maximumValue={100}
-                step={1}
-                value={item.progresso}
-                minimumTrackTintColor="#83a4f3"
-                maximumTrackTintColor="#999"
-                thumbTintColor="#83a4f3"
-
-                onValueChange={(valor) => {
-
-                  setCursos((cursosAtuais) =>
-                    cursosAtuais.map((curso) =>
-                      curso.id === item.id
-                        ? { ...curso, progresso: valor }
-                        : curso
-                    )
-                  );
-
-                }}
-              />
 
               {/* BOTÃO OK */}
               <TouchableOpacity
                 style={styles.botaoSalvar}
-                onPress={() => atualizarProgresso(item)}
+                onPress={() => handleSalvarProgresso(item.id)}
               >
                 <Text style={styles.txtSalvar}>
-                  OK
+                  Finalizar curso
                 </Text>
               </TouchableOpacity>
+
+            </View>
+          )}
+        />
+
+        <FlatList
+          data={cursosFinalizados}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+
+            <View style={styles.cardCurso}>
+
+              <Text style={styles.nomeCurso}>
+                {item.titulo}
+              </Text>
 
             </View>
           )}
