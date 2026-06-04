@@ -99,7 +99,10 @@ export default function PUser({ navigation, route }) {
 
   }
 
-
+  const todosCursos = [
+  ...cursosEmAndamento,
+  ...cursosFinalizados
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -146,13 +149,11 @@ export default function PUser({ navigation, route }) {
       <View style={styles.areaCursos}>
 
         <Text style={styles.tituloCursos}>
-          Cursos em andamento
+          Meus Cursos
         </Text>
 
-
-        {/* LISTA DE CURSOS */}
         <FlatList
-          data={cursosEmAndamento}
+          data={todosCursos}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
 
@@ -162,42 +163,44 @@ export default function PUser({ navigation, route }) {
                 {item.titulo}
               </Text>
 
-              {/* BOTÃO OK */}
-              <TouchableOpacity
-                style={styles.botaoSalvar}
-                onPress={() => handleSalvarProgresso(item.id)}
+              <Text
+                style={{
+                  color:
+                    item.status === 'FINALIZADO'
+                      ? '#4CAF50'
+                      : '#FFC107',
+                  fontWeight: 'bold',
+                  marginTop: 5,
+                }}
               >
-                <Text style={styles.txtSalvar}>
-                  Finalizar curso
-                </Text>
-              </TouchableOpacity>
-
-            </View>
-          )}
-        />
-
-        <FlatList
-          data={cursosFinalizados}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-
-            <View style={styles.cardCurso}>
-
-              <Text style={styles.nomeCurso}>
-                {item.titulo}
+                {item.status}
               </Text>
 
+              {item.status === 'INICIADO' && (
+                <TouchableOpacity
+                  style={styles.botaoSalvar}
+                  onPress={() => handleSalvarProgresso(item.id)}
+                >
+                  <Text style={styles.txtSalvar}>
+                    Finalizar curso
+                  </Text>
+                </TouchableOpacity>
+              )}
+
             </View>
+
           )}
         />
 
-      </View>
+              </View>
 
-    </SafeAreaView>
-  );
-}
+            </SafeAreaView>
+          );
+        }
 
-const styles = StyleSheet.create({
+  const styles = StyleSheet.create({
+
+
 
   container: {
     flex: 1,
