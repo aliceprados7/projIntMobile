@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from './context/AuthContext';
 
 export default function PUser({ navigation, route }) {
 
@@ -79,6 +79,7 @@ export default function PUser({ navigation, route }) {
           'Sucesso',
           dados.mensagem
         );
+          navigation.navigate('PCertificados')
 
         cursos_em_andamento();
 
@@ -175,6 +176,10 @@ export default function PUser({ navigation, route }) {
             </View>
           )}
         />
+
+        <Text style={styles.tituloCursos}>
+          Cursos finalizados
+        </Text>
 
         <FlatList
           data={cursosFinalizados}

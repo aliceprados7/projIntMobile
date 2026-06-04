@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -24,6 +24,9 @@ export default function PCertificados({navigation}) {
   const [imagem, setImagem] = useState(null);
   const [titulo, setTitulo] = useState('');
   const [certificados, setCertificados] = useState([]);
+  useEffect(() => {
+    listarCertificados();
+  }, []);
 
   const salvarCertificado = async () => {
 
@@ -53,6 +56,7 @@ export default function PCertificados({navigation}) {
         type: 'image/jpeg',
       }
     );
+    formData.append('titulo', titulo);
 
     const response = await fetch(
       'http://10.110.12.90:5000/api/certificados/upload',
@@ -140,6 +144,7 @@ export default function PCertificados({navigation}) {
 
   };
   const listarCertificados = async () => {
+    
 
   if (!registro) {
     return;
@@ -152,10 +157,12 @@ export default function PCertificados({navigation}) {
     );
 
     const dados = await response.json();
+    console.log(dados);
 
     if (response.ok) {
 
       setCertificados(dados);
+      console.log(certificados)
 
     } else {
 
@@ -287,7 +294,7 @@ export default function PCertificados({navigation}) {
             <View>
 
               <Text style={styles.nomeArquivo}>
-                {item.nome_original}
+                {item.titulo}
               </Text>
 
               <Text style={styles.tipoArquivo}>

@@ -3,8 +3,10 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert, Image, Scro
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Searchbar } from 'react-native-paper';
 import { Linking } from 'react-native';
+import { useAuth } from './context/AuthContext';
 
 export default function PInicial({ navigation }) {
+  const { usuario } = useAuth();
     const [search, setSearch] = useState('');
     const [cursos, setCursos] = useState([]);
     useEffect(() => {
@@ -39,6 +41,28 @@ export default function PInicial({ navigation }) {
             console.log(error);
         }
     };
+
+    async function inscrever(id) {
+      try {
+        const response = await fetch("http://10.110.12.90:5000/cursos_inscritos", {
+          method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          "registro": usuario?.numero_registro,
+          "cursoId": id
+        })
+        })
+
+        if(response.ok){
+          alert("Inscrição realizada com sucesso")
+          navigation.navigate('PUser')
+        }
+
+        
+      } catch (error) {
+        alert(error)
+      }
+    }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -122,11 +146,7 @@ export default function PInicial({ navigation }) {
 
             <TouchableOpacity
               style={styles.botao}
-              onPress={() =>
-                navigation.navigate('PUser', {
-                  curso: curso.titulo
-                })
-              }
+              onPress={() => inscrever(curso.id)}
             >
               <Text style={styles.txtBotaoCurso}>Inscrever-se</Text>
             </TouchableOpacity>
